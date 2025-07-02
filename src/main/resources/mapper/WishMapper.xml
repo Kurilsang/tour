@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.dao.WishMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.tour.model.Wish">
+        <id column="id" property="id"/>
+        <result column="user_openid" property="userOpenid"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="location_id" property="locationId"/>
+        <result column="image_urls" property="imageUrls"/>
+        <result column="status" property="status"/>
+        <result column="vote_count" property="voteCount"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 高级查询心愿路线列表，支持关键词搜索和排序 -->
+    <select id="queryWishList" resultMap="BaseResultMap">
+        SELECT
+        id,
+        user_openid,
+        title,
+        description,
+        location_id,
+        image_urls,
+        status,
+        vote_count,
+        comment_count,
+        create_time
+        FROM
+        wish
+        <where>
+            <if test="query.keyword != null and query.keyword != ''">
+                AND (
+                title LIKE CONCAT('%', #{query.keyword}, '%')
+                OR description LIKE CONCAT('%', #{query.keyword}, '%')
+                )
+            </if>
+            <if test="query.status != null">
+                AND status = #{query.status}
+            </if>
+            <if test="query.startTime != null">
+                AND create_time &gt;= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND create_time &lt;= #{query.endTime}
+            </if>
+        </where>
+        <choose>
+            <when test="query.sortType != null and query.sortType == 1">
+                <!-- 按热度排序（投票数） -->
+                ORDER BY vote_count DESC, create_time DESC
+            </when>
+            <otherwise>
+                <!-- 默认按最新排序 -->
+                ORDER BY create_time DESC
+            </otherwise>
+        </choose>
+    </select>
+</mapper> 

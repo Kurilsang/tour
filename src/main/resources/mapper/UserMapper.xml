@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.dao.UserMapper">
+
+    <select id="queryUserList" resultType="com.tour.model.User">
+        SELECT
+            id,
+            openid,
+            unionid,
+            nickname,
+            avatar,
+            role,
+            create_time
+        FROM
+            user
+        <where>
+            <if test="query.keyword != null and query.keyword != ''">
+                AND (
+                    nickname LIKE CONCAT('%', #{query.keyword}, '%')
+                    OR openid LIKE CONCAT('%', #{query.keyword}, '%')
+                )
+            </if>
+            <if test="query.role != null and query.role != ''">
+                AND role = #{query.role}
+            </if>
+            <if test="query.startTime != null">
+                AND create_time &gt;= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND create_time &lt;= #{query.endTime}
+            </if>
+        </where>
+        ORDER BY create_time 
+        <if test="query.sortDirection != null and query.sortDirection.toLowerCase() == 'asc'">
+            ASC
+        </if>
+        <if test="query.sortDirection == null or query.sortDirection.toLowerCase() != 'asc'">
+            DESC
+        </if>
+    </select>
+</mapper> 

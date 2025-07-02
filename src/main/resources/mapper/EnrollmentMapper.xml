@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.dao.EnrollmentMapper">
+
+    <select id="loadSignupListByActivityId" resultType="com.tour.vo.SignUpListVO">
+        SELECT
+--             e.id AS id,
+--             e.user_id AS openid,
+--             u.nickname AS nickname,
+--             t.name AS name,
+--             t.phone AS phone,
+--             e.price AS price
+                e.id AS id,
+                e.user_id AS openid,
+                u.nickname AS nickname,
+                t.name AS name,
+                t.phone AS phone,
+                t.gender AS gender,
+                t.id_card AS idCard,
+                t.birthday AS birthday,
+                t.emergency_name AS emergencyName,
+                t.emergency_phone AS emergencyPhone,
+                t.nickname AS travelerNickname,
+                e.price AS price,
+                bl.bus_location AS busLocation
+        FROM
+            enrollment e
+                JOIN
+            user u ON e.user_id = u.openid
+                JOIN
+            enrollment_traveler et ON e.id = et.enrollment_id
+                JOIN
+            traveler t ON et.traveler_id = t.id
+                JOIN
+            activity_order ao ON e.order_no = ao.order_no
+                JOIN
+            bus_location bl ON ao.bus_location_id = bl.id
+        WHERE
+            e.activity_id = #{activityId}
+    </select>
+
+</mapper>

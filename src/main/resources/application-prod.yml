@@ -1,0 +1,137 @@
+# 服务器配置
+server:
+  port: 80
+  tomcat:
+    max-threads: 300
+    min-spare-threads: 30
+    max-connections: 10000
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
+# 安全配置
+security:
+  white-list:
+    urls:
+      - /api/auth/wxLogin
+      - /api/auth/check
+      - /api/common/**
+      - /error
+      - /api/count
+      - /api/wx/message/receive
+      - /api/wx/payment/notify/**
+      - /api/wx/payment/cloud/refund/notify
+      - /api/wx/payment/cloud/**
+
+spring:
+  application:
+    name: tour
+  # 数据库配置 - 使用微信云托管的MySQL
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 微信云托管会自动注入以下环境变量
+    url: jdbc:mysql://${MYSQL_ADDRESS}/${MYSQL_DATABASE:tour}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: ${MYSQL_USERNAME}  # 由微信云托管自动注入
+    password: ${MYSQL_PASSWORD}  # 由微信云托管自动注入
+  mvc:
+    view:
+      suffix: .html
+      prefix: /
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+# 微信小程序配置
+wx:
+  miniapp:
+    # 从环境变量读取小程序配置
+    appid: ${WX_MINIAPP_APPID}  # 在微信云托管控制台设置此环境变量
+    secret: ${WX_MINIAPP_SECRET}  # 在微信云托管控制台设置此环境变量
+
+# JWT配置
+jwt:
+  # JWT存储的请求头
+  tokenHeader: Authorization
+  # JWT加解密使用的密钥(64字节以上)
+  secret: ${JWT_SECRET:prod_jwt_secret_key_123456}
+  # JWT的超期限时间(单位毫秒)
+  expiration: ${JWT_EXPIRATION:2592000000}
+  # JWT负载中拿到开头
+  tokenHead: Bearer
+
+# MyBatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.tour.model
+  configuration:
+    map-underscore-to-camel-case: true
+
+# MyBatis-Plus配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+  global-config:
+    db-config:
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 日志配置
+logging:
+  level:
+    root: warn
+    com.tour: info
+  file:
+    name: /data/logs/tour.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+
+# 加密配置
+tour:
+  encrypt:
+    # 加密密钥（长度为16字节）
+    key: ${TOUR_ENCRYPT_KEY:tourProdKey12345678}
+
+# 文件上传配置 - 使用对象存储
+file:
+  upload:
+    path: ${FILE_UPLOAD_PATH:/data/upload/tour}
+    domain: ${FILE_UPLOAD_DOMAIN:https://example.com/upload}
+
+# 腾讯云对象存储配置
+cos:
+  bucket: ${COS_BUCKET}
+  region: ${COS_REGION:ap-shanghai}
+
+# 微信支付云托管配置
+wechat:
+  pay:
+    product-notify-url: http://cn-hk-bgp-4.ofalias.net:59737/api/wx/payment/notify/product
+    activity-notify-url: http://cn-hk-bgp-4.ofalias.net:59737/api/wx/payment/notify/activity
+    merchant-id: ${MERCHANT_ID}
+    private-key-path: app/src/resources/cert/apiclient_key.pem
+    merchant-serial-number: ${MERCHANT_SERIAL_NUMBER}
+    public-key-id: ${PUBLIC_KEY_ID}
+    public-key-path: app/src/main/resources/cert/pub_key.pem
+    api-v3-key: ${API_V3_KEY}
+    appid: ${WX_MINIAPP_APPID}
+
+    cloud:
+      env-id: prod-3goiaaiadf5a04cf
+      container:
+        service: springboot-hkx7
+        path: /api/wx/payment/notify
+        product-path: /api/wx/payment/cloud/notify/product
+        activity-path: /api/wx/payment/cloud/notify/activity
+        refund-path: /api/wx/payment/cloud/refund/notify
+

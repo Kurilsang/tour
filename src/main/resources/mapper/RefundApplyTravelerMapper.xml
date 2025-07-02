@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.dao.RefundApplyTravelerMapper">
+
+    <!-- 根据退款申请ID查询关联的出行人信息 -->
+    <select id="selectByRefundApplyId" resultType="com.tour.model.RefundApplyTraveler">
+        SELECT 
+            *
+        FROM 
+            refund_apply_traveler
+        WHERE 
+            refund_apply_id = #{refundApplyId}
+    </select>
+
+    <!-- 根据订单号查询关联的退款申请出行人信息 -->
+    <select id="selectByOrderNo" resultType="com.tour.model.RefundApplyTraveler">
+        SELECT 
+            *
+        FROM 
+            refund_apply_traveler
+        WHERE 
+            order_no = #{orderNo}
+    </select>
+
+    <!-- 根据退款申请ID和订单号查询关联的出行人信息 -->
+    <select id="selectByRefundApplyIdAndOrderNo" resultType="com.tour.model.RefundApplyTraveler">
+        SELECT 
+            *
+        FROM 
+            refund_apply_traveler
+        WHERE 
+            refund_apply_id = #{refundApplyId}
+        AND 
+            order_no = #{orderNo}
+    </select>
+    
+    <!-- 批量插入退款申请与出行人关联记录 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO refund_apply_traveler (
+            refund_apply_id, 
+            traveler_id, 
+            activity_order_traveler_id,
+            order_no, 
+            tick_type,
+            refund_amount
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.refundApplyId}, 
+                #{item.travelerId}, 
+                #{item.activityOrderTravelerId},
+                #{item.orderNo}, 
+                #{item.tickType},
+                #{item.refundAmount}
+            )
+        </foreach>
+    </insert>
+    
+</mapper> 

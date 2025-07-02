@@ -1,0 +1,8 @@
+# Spring配置
+spring:
+  profiles:
+    # 默认使用开发环境
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+# 通用配置仅保留环境变量配置，具体值在各环境配置文件中设置
+

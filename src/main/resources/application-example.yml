@@ -1,0 +1,109 @@
+# 服务器配置
+server:
+  port: 8080
+  tomcat:
+    max-threads: 200
+    min-spare-threads: 10
+    max-connections: 10000
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
+# 安全配置
+security:
+  white-list:
+    urls:
+      - /api/auth/wxLogin
+      - /api/common/**
+      - /error
+      # 可以在这里添加更多白名单路径
+
+spring:
+  # 应用配置
+  application:
+    name: tour
+  # 数据库配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tour?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 1234
+  mvc:
+    view:
+      suffix: .html
+      prefix: /
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+# 微信小程序配置
+wx:
+  miniapp:
+    # 开发环境下的小程序配置
+    appid:   # 替换为您的小程序appid
+    secret:   # 替换为您的小程序secret
+
+# JWT配置
+jwt:
+  # JWT存储的请求头
+  tokenHeader: Authorization
+  # JWT加解密使用的密钥
+  secret: dev_jwt_secret_key_123456dev_jwt_secret_key_123456dev_jwt_secret_key_123456
+  # JWT的超期限时间
+  expiration: 2592000000
+  # JWT负载中拿到开头
+  tokenHead: Bearer
+
+# MyBatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.tour.model
+  configuration:
+    map-underscore-to-camel-case: true
+
+# MyBatis-Plus配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 日志配置
+logging:
+  level:
+    root: info
+    com.tour: debug
+    org.springframework.web: info
+    org.springframework.security: debug
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n'
+
+# 文件上传配置
+file:
+  upload:
+    # 上传文件存储路径（本地测试用）
+    path: D:/upload/tour
+    # 文件访问域名（本地测试用）
+    domain: http://localhost:8080/upload
+
+# 加密配置
+tour:
+  encrypt:
+    # 加密密钥（长度为16字节）
+    key: tourDefaultKey12345
+
+# 腾讯云对象存储配置
+cos:
+  bucket: 7072-prod-5
+  region: ap-shanghai  # 存储桶地域，默认是上海

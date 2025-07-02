@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.dao.WishCommentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.tour.model.WishComment">
+        <id column="id" property="id" />
+        <result column="wish_id" property="wishId" />
+        <result column="user_openid" property="userOpenid" />
+        <result column="content" property="content" />
+        <result column="image_urls" property="imageUrls" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+    
+    <!-- 管理员高级查询评论列表 -->
+    <select id="queryCommentListForAdmin" resultMap="BaseResultMap">
+        SELECT
+            c.id,
+            c.wish_id,
+            c.user_openid,
+            c.content,
+            c.image_urls,
+            c.create_time
+        FROM
+            wish_comment c
+        LEFT JOIN
+            user u ON c.user_openid = u.openid
+        LEFT JOIN
+            wish w ON c.wish_id = w.id
+        <where>
+            <if test="query.keyword != null and query.keyword != ''">
+                AND c.content LIKE CONCAT('%', #{query.keyword}, '%')
+            </if>
+            <if test="query.wishId != null">
+                AND c.wish_id = #{query.wishId}
+            </if>
+            <if test="query.nickname != null and query.nickname != ''">
+                AND u.nickname LIKE CONCAT('%', #{query.nickname}, '%')
+            </if>
+            <if test="query.startTime != null">
+                AND c.create_time &gt;= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND c.create_time &lt;= #{query.endTime}
+            </if>
+        </where>
+        ORDER BY c.create_time DESC
+    </select>
+</mapper> 
